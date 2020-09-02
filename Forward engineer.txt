@@ -1,0 +1,107 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Data`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Data` (
+  `ip` VARCHAR(100) NOT NULL,
+  `port` INT NOT NULL,
+  `connection_Try` BIGINT(20) NOT NULL,
+  `timeout` TINYINT(1) NOT NULL,
+  `success` TINYINT(1) NOT NULL,
+  `ping` BIGINT(20) NULL,
+  PRIMARY KEY (`ip`),
+  UNIQUE INDEX `ip_UNIQUE` (`ip` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Version`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Version` (
+  `Data_ip` VARCHAR(100) NOT NULL,
+  `Version` INT NULL,
+  `services` INT NULL,
+  `timestamp` VARCHAR(100) NULL,
+  `nonce` VARCHAR(100) NULL,
+  `start_height` INT NULL,
+  `relay` INT NULL,
+  PRIMARY KEY (`Data_ip`),
+  INDEX `fk_Version_Data1_idx` (`Data_ip` ASC) VISIBLE,
+  CONSTRAINT `fk_Version_Data1`
+    FOREIGN KEY (`Data_ip`)
+    REFERENCES `mydb`.`Data` (`ip`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Reciever`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Reciever` (
+  `Version_Data_ip` VARCHAR(100) NOT NULL,
+  `recvServices` INT NULL,
+  `recvIp` VARCHAR(45) NULL,
+  `recvPort` INT NULL,
+  PRIMARY KEY (`Version_Data_ip`),
+  INDEX `fk_Reciever_Version1_idx` (`Version_Data_ip` ASC) VISIBLE,
+  CONSTRAINT `fk_Reciever_Version1`
+    FOREIGN KEY (`Version_Data_ip`)
+    REFERENCES `mydb`.`Version` (`Data_ip`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`trans`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`trans` (
+  `Version_Data_ip` VARCHAR(100) NOT NULL,
+  `transServices` INT NULL,
+  `transIp` VARCHAR(45) NULL,
+  `transPort` INT NULL,
+  `transcol` VARCHAR(45) NULL,
+  PRIMARY KEY (`Version_Data_ip`),
+  CONSTRAINT `fk_trans_Version1`
+    FOREIGN KEY (`Version_Data_ip`)
+    REFERENCES `mydb`.`Version` (`Data_ip`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`user_agent`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`user_agent` (
+  `Version_Data_ip` VARCHAR(100) NOT NULL,
+  `user_agents_bytes` INT NULL,
+  `user_agent` VARCHAR(45) NULL,
+  PRIMARY KEY (`Version_Data_ip`),
+  CONSTRAINT `fk_user_agent_Version1`
+    FOREIGN KEY (`Version_Data_ip`)
+    REFERENCES `mydb`.`Version` (`Data_ip`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
